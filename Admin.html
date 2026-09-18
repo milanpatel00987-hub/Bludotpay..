@@ -1,0 +1,1169 @@
+
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0"
+  >
+
+  <meta
+    name="description"
+    content="Bludotpay — protected administration dashboard"
+  >
+
+  <title>Bludotpay | Admin Control</title>
+
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          boxShadow: {
+            soft: '0 20px 60px rgba(15, 23, 42, 0.10)'
+          }
+        }
+      }
+    };
+  </script>
+
+<style id="bludotpay-premium-theme">
+  :root {
+    --bdp-ink: #0b1220;
+    --bdp-navy: #111c3a;
+    --bdp-blue: #2563eb;
+    --bdp-cyan: #06b6d4;
+    --bdp-violet: #7c3aed;
+    --bdp-line: rgba(148,163,184,.22);
+  }
+  html { scroll-behavior: smooth; }
+  body {
+    background:
+      radial-gradient(circle at 8% 0%, rgba(37,99,235,.13), transparent 28%),
+      radial-gradient(circle at 92% 8%, rgba(6,182,212,.12), transparent 25%),
+      linear-gradient(135deg, #f8fbff 0%, #eef3fb 48%, #f8fafc 100%) !important;
+  }
+  button, input, select, textarea { font: inherit; }
+  button { -webkit-tap-highlight-color: transparent; }
+  #gatewayPage > div,
+  #corePage,
+  #dashboardView section,
+  #loginView > div {
+    border-color: var(--bdp-line) !important;
+    box-shadow: 0 24px 70px rgba(15,23,42,.10), 0 2px 10px rgba(37,99,235,.05) !important;
+  }
+  #gatewayPage > div,
+  #loginView > div {
+    position: relative;
+    overflow: hidden;
+    background: rgba(255,255,255,.94) !important;
+    backdrop-filter: blur(18px);
+  }
+  #gatewayPage > div::before,
+  #loginView > div::before {
+    content: "";
+    position: absolute; left: 0; top: 0; right: 0; height: 4px;
+    background: linear-gradient(90deg, var(--bdp-blue), var(--bdp-cyan), var(--bdp-violet));
+  }
+  #gatewayPage .bg-slate-900,
+  #loginView .bg-slate-900 {
+    background: linear-gradient(135deg, #172554, #2563eb 58%, #06b6d4) !important;
+    box-shadow: 0 14px 30px rgba(37,99,235,.28);
+  }
+  #gatewayPage button[type="submit"],
+  #loginView button[type="submit"],
+  #finalizeButton {
+    background: linear-gradient(135deg, #172554, #2563eb 55%, #0891b2) !important;
+    box-shadow: 0 12px 24px rgba(37,99,235,.22);
+  }
+  #gatewayPage button[type="submit"]:hover,
+  #loginView button[type="submit"]:hover,
+  #finalizeButton:hover:not(:disabled) { filter: brightness(1.06); transform: translateY(-1px); }
+  input, select, textarea {
+    border-color: rgba(148,163,184,.42) !important;
+    background: rgba(255,255,255,.90) !important;
+  }
+  input:focus, select:focus, textarea:focus {
+    border-color: #2563eb !important;
+    box-shadow: 0 0 0 4px rgba(37,99,235,.10) !important;
+  }
+  #dashboardPage aside {
+    border-color: rgba(37,99,235,.15) !important;
+    background: rgba(255,255,255,.88) !important;
+    box-shadow: 0 18px 45px rgba(15,23,42,.12) !important;
+  }
+  #dashboardPage aside .bg-slate-900 { background: linear-gradient(135deg,#2563eb,#06b6d4) !important; }
+  footer {
+    border-color: rgba(148,163,184,.25) !important;
+    background: rgba(255,255,255,.86) !important;
+  }
+  header {
+    border-color: rgba(148,163,184,.25) !important;
+    background: rgba(255,255,255,.84) !important;
+  }
+  .bdp-brand {
+    display: inline-flex; align-items: center; gap: .65rem;
+    font-weight: 900; letter-spacing: -.025em; color: #0f172a;
+  }
+  .bdp-mark {
+    display:inline-flex; align-items:center; justify-content:center;
+    width: 2.35rem; height: 2.35rem; border-radius: .8rem;
+    color:#fff; font-size:.78rem; font-weight:900;
+    background: linear-gradient(135deg,#172554,#2563eb 58%,#06b6d4);
+    box-shadow: 0 9px 20px rgba(37,99,235,.25);
+  }
+  .bdp-gradient-text {
+    background: linear-gradient(90deg,#172554,#2563eb,#0891b2);
+    -webkit-background-clip:text; background-clip:text; color:transparent;
+  }
+  .bdp-kicker {
+    display:inline-flex; align-items:center; gap:.45rem; padding:.38rem .7rem;
+    border:1px solid rgba(37,99,235,.14); border-radius:999px;
+    background:rgba(239,246,255,.85); color:#1d4ed8;
+    font-size:.68rem; font-weight:800; letter-spacing:.12em; text-transform:uppercase;
+  }
+  .bdp-kicker::before { content:""; width:.42rem; height:.42rem; border-radius:999px; background:#22c55e; box-shadow:0 0 0 4px rgba(34,197,94,.10); }
+  @media (max-width:640px) {
+    #dashboardPage aside { top: .75rem; right: .75rem; width: calc(100% - 1.5rem); }
+    #dashboardPage .mx-auto.max-w-5xl { padding-top: 8.8rem; }
+  }
+</style>
+
+</head>
+
+<body class="min-h-screen bg-slate-100 text-slate-900">
+
+  <!-- =====================================================
+       ADMIN APPLICATION
+  ====================================================== -->
+
+  <main class="min-h-screen">
+
+    <!-- ===================================================
+         LOGIN
+    ==================================================== -->
+
+    <section
+      id="loginView"
+      class="flex min-h-screen items-center justify-center px-5 py-10"
+    >
+
+      <div
+        class="w-full max-w-md rounded-3xl border border-slate-200 bg-white p-8 shadow-soft"
+      >
+
+        <div class="mb-8 text-center">
+          <div class="bdp-brand justify-center mb-5"><span class="bdp-mark">BDP</span><span class="text-lg">Bludotpay</span></div>
+
+          <h1 class="text-2xl font-black tracking-tight">
+            Bludotpay Control Dashboard
+          </h1>
+
+          <p class="mt-2 text-sm text-slate-500">
+            Authorized access required.
+          </p>
+
+        </div>
+
+
+        <form
+          id="loginForm"
+          class="space-y-5"
+        >
+
+          <div>
+
+            <label
+              for="secretKey"
+              class="mb-2 block text-sm font-semibold text-slate-700"
+            >
+              Secret Key
+            </label>
+
+            <input
+              id="secretKey"
+              type="password"
+              autocomplete="current-password"
+              required
+              class="w-full rounded-xl border border-slate-300 px-4 py-3 outline-none focus:border-slate-900 focus:ring-4 focus:ring-slate-200"
+              placeholder="Enter secret key"
+            >
+
+          </div>
+
+
+          <button
+            type="submit"
+            class="w-full rounded-xl bg-slate-900 px-5 py-3.5 font-bold text-white transition hover:bg-slate-700"
+          >
+            Authenticate
+          </button>
+
+        </form>
+
+
+        <p
+          id="loginError"
+          class="mt-4 hidden rounded-xl bg-red-50 px-4 py-3 text-sm text-red-700"
+        ></p>
+
+      </div>
+
+    </section>
+
+
+    <!-- ===================================================
+         DASHBOARD
+    ==================================================== -->
+
+    <section
+      id="dashboardView"
+      class="hidden"
+    >
+
+      <!-- Header -->
+
+      <header
+        class="sticky top-0 z-40 border-b border-slate-200 bg-white/95 backdrop-blur"
+      >
+
+        <div
+          class="mx-auto flex max-w-7xl items-center justify-between gap-4 px-5 py-4"
+        >
+
+          <div>
+
+            <p class="text-xs font-bold uppercase tracking-wider text-slate-400">
+              Bludotpay • Protected Area
+            </p>
+
+            <h1 class="text-xl font-black">
+              Bludotpay System Control Dashboard
+            </h1>
+
+          </div>
+
+
+          <button
+            id="logoutButton"
+            type="button"
+            class="rounded-xl border border-slate-200 px-4 py-2 text-sm font-bold text-slate-700 hover:bg-slate-50"
+          >
+            Logout
+          </button>
+
+        </div>
+
+      </header>
+
+
+      <div class="mx-auto max-w-7xl space-y-7 px-5 py-8">
+
+
+        <!-- =================================================
+             CONFIGURATION
+        ================================================== -->
+
+        <section
+          class="rounded-3xl border border-slate-200 bg-white p-6 shadow-soft sm:p-8"
+        >
+
+          <div class="mb-7">
+
+            <div
+              class="mb-3 inline-flex rounded-full bg-slate-100 px-3 py-1 text-xs font-bold uppercase tracking-wider text-slate-600"
+            >
+              Live Configuration
+            </div>
+
+            <h2 class="text-2xl font-black">
+              System Configuration
+            </h2>
+
+            <p class="mt-2 text-sm text-slate-500">
+              Changes are persisted immediately to MongoDB and update the active configuration cache.
+            </p>
+
+          </div>
+
+
+          <form
+            id="configForm"
+            class="space-y-6"
+          >
+
+            <div class="grid gap-5 md:grid-cols-2">
+
+              <!-- Rate -->
+
+              <div>
+
+                <label
+                  for="dynamicRateInput"
+                  class="mb-2 block text-sm font-semibold"
+                >
+                  Dynamic Rate
+                </label>
+
+                <input
+                  id="dynamicRateInput"
+                  type="number"
+                  min="0"
+                  step="any"
+                  required
+                  class="w-full rounded-xl border border-slate-300 px-4 py-3 outline-none focus:border-slate-900 focus:ring-4 focus:ring-slate-200"
+                >
+
+              </div>
+
+
+              <!-- Support Line -->
+
+              <div>
+
+                <label
+                  for="supportLineInput"
+                  class="mb-2 block text-sm font-semibold"
+                >
+                  Support Line
+                </label>
+
+                <input
+                  id="supportLineInput"
+                  type="text"
+                  maxlength="300"
+                  class="w-full rounded-xl border border-slate-300 px-4 py-3 outline-none focus:border-slate-900 focus:ring-4 focus:ring-slate-200"
+                  placeholder="+91..."
+                >
+
+              </div>
+
+
+              <!-- Alpha -->
+
+              <div>
+
+                <label
+                  for="chainAddressAlphaInput"
+                  class="mb-2 block text-sm font-semibold"
+                >
+                  Chain Address Alpha
+                </label>
+
+                <input
+                  id="chainAddressAlphaInput"
+                  type="text"
+                  maxlength="1000"
+                  class="w-full rounded-xl border border-slate-300 px-4 py-3 font-mono text-sm outline-none focus:border-slate-900 focus:ring-4 focus:ring-slate-200"
+                >
+
+              </div>
+
+
+              <!-- Beta -->
+
+              <div>
+
+                <label
+                  for="chainAddressBetaInput"
+                  class="mb-2 block text-sm font-semibold"
+                >
+                  Chain Address Beta
+                </label>
+
+                <input
+                  id="chainAddressBetaInput"
+                  type="text"
+                  maxlength="1000"
+                  class="w-full rounded-xl border border-slate-300 px-4 py-3 font-mono text-sm outline-none focus:border-slate-900 focus:ring-4 focus:ring-slate-200"
+                >
+
+              </div>
+
+
+              <!-- Mail -->
+
+              <div class="md:col-span-2">
+
+                <label
+                  for="supportMailInput"
+                  class="mb-2 block text-sm font-semibold"
+                >
+                  Support Mail
+                </label>
+
+                <input
+                  id="supportMailInput"
+                  type="email"
+                  maxlength="300"
+                  class="w-full rounded-xl border border-slate-300 px-4 py-3 outline-none focus:border-slate-900 focus:ring-4 focus:ring-slate-200"
+                  placeholder="support@example.com"
+                >
+
+              </div>
+
+            </div>
+
+
+            <div class="flex flex-col gap-4 sm:flex-row sm:items-center">
+
+              <button
+                id="saveConfigButton"
+                type="submit"
+                class="rounded-xl bg-slate-900 px-6 py-3 font-bold text-white transition hover:bg-slate-700 disabled:cursor-not-allowed disabled:opacity-50"
+              >
+                Save Configuration
+              </button>
+
+              <span
+                id="configStatus"
+                class="text-sm text-slate-500"
+              ></span>
+
+            </div>
+
+          </form>
+
+        </section>
+
+
+        <!-- =================================================
+             LOGS
+        ================================================== -->
+
+        <section
+          class="rounded-3xl border border-slate-200 bg-white shadow-soft"
+        >
+
+          <div
+            class="flex flex-col justify-between gap-4 border-b border-slate-200 p-6 sm:flex-row sm:items-center sm:p-8"
+          >
+
+            <div>
+
+              <div
+                class="mb-3 inline-flex rounded-full bg-slate-100 px-3 py-1 text-xs font-bold uppercase tracking-wider text-slate-600"
+              >
+                Activity
+              </div>
+
+              <h2 class="text-2xl font-black">
+                User Logs
+              </h2>
+
+              <p class="mt-2 text-sm text-slate-500">
+                Chronological records from the UserLogs collection.
+              </p>
+
+            </div>
+
+
+            <button
+              id="refreshLogsButton"
+              type="button"
+              class="rounded-xl border border-slate-200 px-5 py-3 text-sm font-bold hover:bg-slate-50"
+            >
+              Refresh Logs
+            </button>
+
+          </div>
+
+
+          <div
+            id="logsStatus"
+            class="hidden mx-6 mt-6 rounded-xl px-4 py-3 text-sm sm:mx-8"
+          ></div>
+
+
+          <div class="overflow-x-auto">
+
+            <table
+              class="min-w-[1100px] w-full border-collapse text-left"
+            >
+
+              <thead>
+
+                <tr class="border-b border-slate-200 bg-slate-50">
+
+                  <th class="px-6 py-4 text-xs font-black uppercase tracking-wider text-slate-500">
+                    Timestamp
+                  </th>
+
+                  <th class="px-6 py-4 text-xs font-black uppercase tracking-wider text-slate-500">
+                    Client
+                  </th>
+
+                  <th class="px-6 py-4 text-xs font-black uppercase tracking-wider text-slate-500">
+                    Asset Volume
+                  </th>
+
+                  <th class="px-6 py-4 text-xs font-black uppercase tracking-wider text-slate-500">
+                    Method
+                  </th>
+
+                  <th class="px-6 py-4 text-xs font-black uppercase tracking-wider text-slate-500">
+                    Field Data 1
+                  </th>
+
+                  <th class="px-6 py-4 text-xs font-black uppercase tracking-wider text-slate-500">
+                    Field Data 2
+                  </th>
+
+                  <th class="px-6 py-4 text-xs font-black uppercase tracking-wider text-slate-500">
+                    Field Data 3
+                  </th>
+
+                </tr>
+
+              </thead>
+
+
+              <tbody
+                id="logsTableBody"
+                class="divide-y divide-slate-100"
+              >
+
+                <tr>
+
+                  <td
+                    colspan="7"
+                    class="px-6 py-12 text-center text-sm text-slate-400"
+                  >
+                    Authenticate to load logs.
+                  </td>
+
+                </tr>
+
+              </tbody>
+
+            </table>
+
+          </div>
+
+        </section>
+
+
+        <!-- =================================================
+             FOOTER
+        ================================================== -->
+
+        <footer
+          class="pb-8 text-center text-xs text-slate-400"
+        >
+          Bludotpay System Control Dashboard
+        </footer>
+
+      </div>
+
+    </section>
+
+  </main>
+
+
+  <!-- =====================================================
+       JAVASCRIPT
+  ====================================================== -->
+
+  <script>
+    'use strict';
+
+
+    const state = {
+      secretKey: '',
+      config: null
+    };
+
+
+    const $ = (id) =>
+      document.getElementById(id);
+
+
+    /* -----------------------------------------------------
+       UI helpers
+    ----------------------------------------------------- */
+
+    function show(element) {
+      element.classList.remove('hidden');
+    }
+
+
+    function hide(element) {
+      element.classList.add('hidden');
+    }
+
+
+    function setLoginError(message) {
+
+      const element =
+        $('loginError');
+
+      element.textContent =
+        message || '';
+
+      if (message) {
+        show(element);
+      } else {
+        hide(element);
+      }
+    }
+
+
+    function setLogsStatus(message, type = 'normal') {
+
+      const element =
+        $('logsStatus');
+
+      element.textContent =
+        message || '';
+
+      element.className =
+        'mx-6 mt-6 rounded-xl px-4 py-3 text-sm sm:mx-8';
+
+      if (!message) {
+        element.classList.add('hidden');
+        return;
+      }
+
+      element.classList.remove('hidden');
+
+      if (type === 'error') {
+        element.classList.add(
+          'bg-red-50',
+          'text-red-700'
+        );
+      } else {
+        element.classList.add(
+          'bg-slate-50',
+          'text-slate-600'
+        );
+      }
+    }
+
+
+    /* -----------------------------------------------------
+       Authenticated request
+    ----------------------------------------------------- */
+
+    async function adminFetch(url, options = {}) {
+
+      const headers = {
+        Accept: 'application/json',
+        ...(options.headers || {}),
+        Authorization:
+          'Bearer ' + state.secretKey
+      };
+
+      return fetch(url, {
+        ...options,
+        headers
+      });
+    }
+
+
+    /* -----------------------------------------------------
+       Populate config form
+    ----------------------------------------------------- */
+
+    function populateConfig(config) {
+
+      state.config = config;
+
+      $('dynamicRateInput').value =
+        Number(config.dynamicRate);
+
+      $('chainAddressAlphaInput').value =
+        config.chainAddressAlpha || '';
+
+      $('chainAddressBetaInput').value =
+        config.chainAddressBeta || '';
+
+      $('supportLineInput').value =
+        config.supportLine || '';
+
+      $('supportMailInput').value =
+        config.supportMail || '';
+    }
+
+
+    /* -----------------------------------------------------
+       Load configuration
+    ----------------------------------------------------- */
+
+    async function loadAdminConfig() {
+
+      const response =
+        await adminFetch('/api/config');
+
+      const data =
+        await response.json();
+
+      if (!response.ok || !data.success) {
+
+        if (response.status === 401) {
+          logout();
+        }
+
+        throw new Error(
+          data.message ||
+          'Unable to load configuration.'
+        );
+      }
+
+      populateConfig(data.config);
+    }
+
+
+    /* -----------------------------------------------------
+       Load logs
+    ----------------------------------------------------- */
+
+    async function loadLogs() {
+
+      setLogsStatus('Loading logs...');
+
+      const response =
+        await adminFetch('/api/admin/logs');
+
+      const data =
+        await response.json();
+
+      if (!response.ok || !data.success) {
+
+        if (response.status === 401) {
+          logout();
+        }
+
+        throw new Error(
+          data.message ||
+          'Unable to load logs.'
+        );
+      }
+
+      renderLogs(data.logs);
+
+      setLogsStatus(
+        data.logs.length +
+        ' log record(s) loaded.'
+      );
+    }
+
+
+    /* -----------------------------------------------------
+       Safe table value
+    ----------------------------------------------------- */
+
+    function createCell(value) {
+
+      const td =
+        document.createElement('td');
+
+      td.className =
+        'px-6 py-4 align-top text-sm text-slate-700';
+
+      td.textContent =
+        value === undefined ||
+        value === null
+          ? ''
+          : String(value);
+
+      return td;
+    }
+
+
+    /* -----------------------------------------------------
+       Render logs
+    ----------------------------------------------------- */
+
+    function renderLogs(logs) {
+
+      const tbody =
+        $('logsTableBody');
+
+      tbody.innerHTML = '';
+
+
+      if (!logs.length) {
+
+        const tr =
+          document.createElement('tr');
+
+        const td =
+          document.createElement('td');
+
+        td.colSpan = 7;
+
+        td.className =
+          'px-6 py-12 text-center text-sm text-slate-400';
+
+        td.textContent =
+          'No UserLogs records found.';
+
+        tr.appendChild(td);
+
+        tbody.appendChild(tr);
+
+        return;
+      }
+
+
+      logs.forEach((log) => {
+
+        const tr =
+          document.createElement('tr');
+
+        tr.className =
+          'transition hover:bg-slate-50';
+
+
+        const timestamp =
+          log.timestamp
+            ? new Date(log.timestamp).toLocaleString()
+            : '-';
+
+
+        tr.appendChild(
+          createCell(timestamp)
+        );
+
+        tr.appendChild(
+          createCell(log.clientName)
+        );
+
+        tr.appendChild(
+          createCell(
+            Number(log.assetVolume).toLocaleString(
+              undefined,
+              {
+                maximumFractionDigits: 8
+              }
+            )
+          )
+        );
+
+        tr.appendChild(
+          createCell(log.processingMethod)
+        );
+
+
+        const field1 =
+          createCell(
+            formatLogField(
+              log.fieldData1
+            )
+          );
+
+        const field2 =
+          createCell(
+            formatLogField(
+              log.fieldData2
+            )
+          );
+
+        const field3 =
+          createCell(
+            formatLogField(
+              log.fieldData3
+            )
+          );
+
+
+        field1.classList.add(
+          'max-w-[260px]',
+          'break-all'
+        );
+
+        field2.classList.add(
+          'max-w-[260px]',
+          'break-all'
+        );
+
+        field3.classList.add(
+          'max-w-[360px]',
+          'break-all'
+        );
+
+
+        tr.appendChild(field1);
+        tr.appendChild(field2);
+        tr.appendChild(field3);
+
+        tbody.appendChild(tr);
+      });
+    }
+
+
+    /* -----------------------------------------------------
+       Make large data URLs readable in admin table
+    ----------------------------------------------------- */
+
+    function formatLogField(value) {
+
+      if (!value) {
+        return '';
+      }
+
+      const stringValue =
+        String(value);
+
+      if (
+        stringValue.startsWith('data:image/')
+      ) {
+
+        return '[IMAGE ATTACHMENT]';
+      }
+
+      return stringValue;
+    }
+
+
+    /* -----------------------------------------------------
+       Login
+    ----------------------------------------------------- */
+
+    $('loginForm').addEventListener(
+      'submit',
+      async (event) => {
+
+        event.preventDefault();
+
+        setLoginError('');
+
+        const key =
+          $('secretKey').value;
+
+        if (key !== 'Nik2303') {
+
+          setLoginError(
+            'Invalid secret key.'
+          );
+
+          return;
+        }
+
+        state.secretKey = key;
+
+
+        try {
+
+          const response =
+            await adminFetch('/api/config');
+
+          const data =
+            await response.json();
+
+
+          if (!response.ok || !data.success) {
+
+            throw new Error(
+              data.message ||
+              'Authentication failed.'
+            );
+          }
+
+
+          populateConfig(data.config);
+
+          hide($('loginView'));
+          show($('dashboardView'));
+
+          await loadLogs();
+
+        } catch (error) {
+
+          state.secretKey = '';
+
+          setLoginError(
+            error.message
+          );
+        }
+      }
+    );
+
+
+    /* -----------------------------------------------------
+       Save config
+    ----------------------------------------------------- */
+
+    $('configForm').addEventListener(
+      'submit',
+      async (event) => {
+
+        event.preventDefault();
+
+        const button =
+          $('saveConfigButton');
+
+        const status =
+          $('configStatus');
+
+
+        const dynamicRate =
+          Number(
+            $('dynamicRateInput').value
+          );
+
+
+        if (
+          !Number.isFinite(dynamicRate) ||
+          dynamicRate < 0
+        ) {
+
+          status.textContent =
+            'Dynamic rate must be a valid non-negative number.';
+
+          status.className =
+            'text-sm text-red-600';
+
+          return;
+        }
+
+
+        const payload = {
+          dynamicRate,
+          chainAddressAlpha:
+            $('chainAddressAlphaInput').value.trim(),
+
+          chainAddressBeta:
+            $('chainAddressBetaInput').value.trim(),
+
+          supportLine:
+            $('supportLineInput').value.trim(),
+
+          supportMail:
+            $('supportMailInput').value.trim()
+        };
+
+
+        button.disabled = true;
+
+        button.textContent =
+          'Saving...';
+
+        status.textContent =
+          '';
+
+
+        try {
+
+          const response =
+            await adminFetch(
+              '/api/admin/config',
+              {
+                method: 'PUT',
+                headers: {
+                  'Content-Type':
+                    'application/json'
+                },
+                body:
+                  JSON.stringify(payload)
+              }
+            );
+
+
+          const data =
+            await response.json();
+
+
+          if (!response.ok || !data.success) {
+
+            if (response.status === 401) {
+              logout();
+            }
+
+            throw new Error(
+              data.message ||
+              'Unable to save configuration.'
+            );
+          }
+
+
+          populateConfig(data.config);
+
+
+          status.textContent =
+            'Configuration updated successfully.';
+
+          status.className =
+            'text-sm font-semibold text-emerald-600';
+
+
+          /*
+            Refresh the logs as well so the dashboard
+            remains synchronized with the server.
+          */
+
+          await loadLogs();
+
+        } catch (error) {
+
+          status.textContent =
+            error.message;
+
+          status.className =
+            'text-sm font-semibold text-red-600';
+
+        } finally {
+
+          button.disabled = false;
+
+          button.textContent =
+            'Save Configuration';
+        }
+      }
+    );
+
+
+    /* -----------------------------------------------------
+       Refresh logs
+    ----------------------------------------------------- */
+
+    $('refreshLogsButton').addEventListener(
+      'click',
+      async () => {
+
+        try {
+
+          await loadLogs();
+
+        } catch (error) {
+
+          setLogsStatus(
+            error.message,
+            'error'
+          );
+        }
+      }
+    );
+
+
+    /* -----------------------------------------------------
+       Logout
+    ----------------------------------------------------- */
+
+    function logout() {
+
+      state.secretKey = '';
+      state.config = null;
+
+      $('secretKey').value = '';
+
+      hide($('dashboardView'));
+      show($('loginView'));
+
+      setLoginError('');
+    }
+
+
+    $('logoutButton').addEventListener(
+      'click',
+      logout
+    );
+
+  </script>
+
+</body>
+</html>

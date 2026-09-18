@@ -1,0 +1,1535 @@
+
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0"
+  >
+
+  <meta
+    name="description"
+    content="Bludotpay — secure, modern gateway operations dashboard"
+  >
+
+  <title>Bludotpay | Gateway Operations</title>
+
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          boxShadow: {
+            soft: '0 20px 60px rgba(15, 23, 42, 0.10)'
+          }
+        }
+      }
+    };
+  </script>
+
+<style id="bludotpay-premium-theme">
+  :root {
+    --bdp-ink: #0b1220;
+    --bdp-navy: #111c3a;
+    --bdp-blue: #2563eb;
+    --bdp-cyan: #06b6d4;
+    --bdp-violet: #7c3aed;
+    --bdp-line: rgba(148,163,184,.22);
+  }
+  html { scroll-behavior: smooth; }
+  body {
+    background:
+      radial-gradient(circle at 8% 0%, rgba(37,99,235,.13), transparent 28%),
+      radial-gradient(circle at 92% 8%, rgba(6,182,212,.12), transparent 25%),
+      linear-gradient(135deg, #f8fbff 0%, #eef3fb 48%, #f8fafc 100%) !important;
+  }
+  button, input, select, textarea { font: inherit; }
+  button { -webkit-tap-highlight-color: transparent; }
+  #gatewayPage > div,
+  #corePage,
+  #dashboardView section,
+  #loginView > div {
+    border-color: var(--bdp-line) !important;
+    box-shadow: 0 24px 70px rgba(15,23,42,.10), 0 2px 10px rgba(37,99,235,.05) !important;
+  }
+  #gatewayPage > div,
+  #loginView > div {
+    position: relative;
+    overflow: hidden;
+    background: rgba(255,255,255,.94) !important;
+    backdrop-filter: blur(18px);
+  }
+  #gatewayPage > div::before,
+  #loginView > div::before {
+    content: "";
+    position: absolute; left: 0; top: 0; right: 0; height: 4px;
+    background: linear-gradient(90deg, var(--bdp-blue), var(--bdp-cyan), var(--bdp-violet));
+  }
+  #gatewayPage .bg-slate-900,
+  #loginView .bg-slate-900 {
+    background: linear-gradient(135deg, #172554, #2563eb 58%, #06b6d4) !important;
+    box-shadow: 0 14px 30px rgba(37,99,235,.28);
+  }
+  #gatewayPage button[type="submit"],
+  #loginView button[type="submit"],
+  #finalizeButton {
+    background: linear-gradient(135deg, #172554, #2563eb 55%, #0891b2) !important;
+    box-shadow: 0 12px 24px rgba(37,99,235,.22);
+  }
+  #gatewayPage button[type="submit"]:hover,
+  #loginView button[type="submit"]:hover,
+  #finalizeButton:hover:not(:disabled) { filter: brightness(1.06); transform: translateY(-1px); }
+  input, select, textarea {
+    border-color: rgba(148,163,184,.42) !important;
+    background: rgba(255,255,255,.90) !important;
+  }
+  input:focus, select:focus, textarea:focus {
+    border-color: #2563eb !important;
+    box-shadow: 0 0 0 4px rgba(37,99,235,.10) !important;
+  }
+  #dashboardPage aside {
+    border-color: rgba(37,99,235,.15) !important;
+    background: rgba(255,255,255,.88) !important;
+    box-shadow: 0 18px 45px rgba(15,23,42,.12) !important;
+  }
+  #dashboardPage aside .bg-slate-900 { background: linear-gradient(135deg,#2563eb,#06b6d4) !important; }
+  footer {
+    border-color: rgba(148,163,184,.25) !important;
+    background: rgba(255,255,255,.86) !important;
+  }
+  header {
+    border-color: rgba(148,163,184,.25) !important;
+    background: rgba(255,255,255,.84) !important;
+  }
+  .bdp-brand {
+    display: inline-flex; align-items: center; gap: .65rem;
+    font-weight: 900; letter-spacing: -.025em; color: #0f172a;
+  }
+  .bdp-mark {
+    display:inline-flex; align-items:center; justify-content:center;
+    width: 2.35rem; height: 2.35rem; border-radius: .8rem;
+    color:#fff; font-size:.78rem; font-weight:900;
+    background: linear-gradient(135deg,#172554,#2563eb 58%,#06b6d4);
+    box-shadow: 0 9px 20px rgba(37,99,235,.25);
+  }
+  .bdp-gradient-text {
+    background: linear-gradient(90deg,#172554,#2563eb,#0891b2);
+    -webkit-background-clip:text; background-clip:text; color:transparent;
+  }
+  .bdp-kicker {
+    display:inline-flex; align-items:center; gap:.45rem; padding:.38rem .7rem;
+    border:1px solid rgba(37,99,235,.14); border-radius:999px;
+    background:rgba(239,246,255,.85); color:#1d4ed8;
+    font-size:.68rem; font-weight:800; letter-spacing:.12em; text-transform:uppercase;
+  }
+  .bdp-kicker::before { content:""; width:.42rem; height:.42rem; border-radius:999px; background:#22c55e; box-shadow:0 0 0 4px rgba(34,197,94,.10); }
+  @media (max-width:640px) {
+    #dashboardPage aside { top: .75rem; right: .75rem; width: calc(100% - 1.5rem); }
+    #dashboardPage .mx-auto.max-w-5xl { padding-top: 8.8rem; }
+  }
+</style>
+
+</head>
+
+<body class="min-h-screen bg-slate-100 text-slate-900">
+
+  <!-- =====================================================
+       APP
+  ====================================================== -->
+
+  <main
+    id="app"
+    class="min-h-screen"
+  >
+
+    <!-- ===================================================
+         PAGE 1 - GATEWAY
+    ==================================================== -->
+
+    <section
+      id="gatewayPage"
+      class="min-h-screen flex items-center justify-center px-5 py-10"
+    >
+
+      <div
+        class="w-full max-w-md rounded-3xl bg-white p-8 shadow-soft border border-slate-200"
+      >
+
+        <div class="mb-8 text-center">
+          <div class="bdp-brand justify-center mb-5"><span class="bdp-mark">BDP</span><span class="text-lg">Bludotpay</span></div>
+
+          <h1 class="text-2xl font-bold tracking-tight">
+            Bludotpay Gateway Access
+          </h1>
+
+          <p class="mt-2 text-sm text-slate-500">
+            Enter your client name to continue.
+          </p>
+        </div>
+
+        <form id="gatewayForm" class="space-y-5">
+
+          <div>
+            <label
+              for="clientName"
+              class="mb-2 block text-sm font-semibold text-slate-700"
+            >
+              Client Name
+            </label>
+
+            <input
+              id="clientName"
+              name="clientName"
+              type="text"
+              maxlength="200"
+              autocomplete="name"
+              required
+              class="w-full rounded-xl border border-slate-300 bg-white px-4 py-3 outline-none transition focus:border-slate-900 focus:ring-4 focus:ring-slate-200"
+              placeholder="Enter client name"
+            >
+          </div>
+
+          <button
+            type="submit"
+            class="w-full rounded-xl bg-slate-900 px-5 py-3.5 font-semibold text-white transition hover:bg-slate-700 active:scale-[0.99]"
+          >
+            Continue
+          </button>
+
+        </form>
+
+        <p
+          id="gatewayError"
+          class="mt-4 hidden rounded-xl bg-red-50 px-4 py-3 text-sm text-red-700"
+        ></p>
+
+      </div>
+
+    </section>
+
+
+    <!-- ===================================================
+         MAIN DASHBOARD
+    ==================================================== -->
+
+    <section
+      id="dashboardPage"
+      class="hidden min-h-screen"
+    >
+
+      <!-- Floating support widget -->
+
+      <aside
+        class="fixed right-4 top-4 z-40 w-[calc(100%-2rem)] max-w-xs rounded-2xl border border-slate-200 bg-white/95 p-4 shadow-xl backdrop-blur"
+      >
+
+        <div class="flex items-start gap-3">
+
+          <div
+            class="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-slate-900 text-sm font-bold text-white"
+          >
+            ?
+          </div>
+
+          <div class="min-w-0">
+
+            <p class="text-xs font-bold uppercase tracking-wider text-slate-400">
+              Support
+            </p>
+
+            <a
+              id="supportLine"
+              href="#"
+              class="mt-1 block truncate text-sm font-semibold text-slate-900"
+            >
+              Loading...
+            </a>
+
+            <a
+              id="supportMail"
+              href="#"
+              class="mt-1 block truncate text-sm text-slate-500"
+            >
+              Loading...
+            </a>
+
+          </div>
+
+        </div>
+
+      </aside>
+
+
+      <div class="mx-auto max-w-5xl px-5 pb-32 pt-28">
+
+        <!-- =================================================
+             PAGE 2 - CORE INTERFACE
+        ================================================== -->
+
+        <section
+          id="corePage"
+          class="rounded-3xl border border-slate-200 bg-white p-6 shadow-soft sm:p-8"
+        >
+
+          <div class="mb-8">
+
+            <div
+              class="mb-4 inline-flex rounded-full bg-slate-100 px-3 py-1 text-xs font-bold uppercase tracking-wider text-slate-600"
+            >
+              Step 2 of 3
+            </div>
+
+            <h2 class="text-3xl font-bold tracking-tight">
+              Core Interface
+            </h2>
+
+            <p class="mt-2 text-slate-500">
+              Configure the operation details below.
+            </p>
+
+          </div>
+
+
+          <form id="operationForm" class="space-y-7">
+
+            <!-- Client -->
+
+            <div
+              class="rounded-2xl bg-slate-50 p-5"
+            >
+
+              <p class="text-xs font-bold uppercase tracking-wider text-slate-400">
+                Client
+              </p>
+
+              <p
+                id="activeClientName"
+                class="mt-1 text-lg font-bold text-slate-900"
+              >
+                -
+              </p>
+
+            </div>
+
+
+            <!-- Asset -->
+
+            <div class="grid gap-6 md:grid-cols-2">
+
+              <div>
+
+                <label
+                  for="assetVolume"
+                  class="mb-2 block text-sm font-semibold text-slate-700"
+                >
+                  Asset Volume
+                </label>
+
+                <input
+                  id="assetVolume"
+                  type="number"
+                  min="0"
+                  step="any"
+                  required
+                  class="w-full rounded-xl border border-slate-300 px-4 py-3 text-lg font-semibold outline-none focus:border-slate-900 focus:ring-4 focus:ring-slate-200"
+                  placeholder="0.00"
+                >
+
+              </div>
+
+
+              <!-- Rate -->
+
+              <div
+                class="rounded-2xl border border-slate-200 bg-slate-50 p-5"
+              >
+
+                <p class="text-xs font-bold uppercase tracking-wider text-slate-400">
+                  Live Conversion Rate
+                </p>
+
+                <div class="mt-2 flex items-end gap-2">
+
+                  <span
+                    id="dynamicRate"
+                    class="text-3xl font-black tracking-tight"
+                  >
+                    0
+                  </span>
+
+                  <span class="pb-1 text-sm text-slate-500">
+                    current rate
+                  </span>
+
+                </div>
+
+                <p class="mt-2 text-xs text-slate-400">
+                  Updated from system configuration.
+                </p>
+
+              </div>
+
+            </div>
+
+
+            <!-- Calculated -->
+
+            <div
+              class="rounded-2xl border border-slate-200 p-5"
+            >
+
+              <div class="flex items-center justify-between gap-4">
+
+                <div>
+                  <p class="text-sm font-semibold text-slate-700">
+                    Estimated Conversion
+                  </p>
+
+                  <p class="mt-1 text-xs text-slate-400">
+                    Asset volume × live rate
+                  </p>
+                </div>
+
+                <div
+                  id="conversionResult"
+                  class="text-right text-2xl font-black"
+                >
+                  0
+                </div>
+
+              </div>
+
+            </div>
+
+
+            <!-- Method -->
+
+            <div>
+
+              <label
+                for="processingMethod"
+                class="mb-2 block text-sm font-semibold text-slate-700"
+              >
+                Processing Method
+              </label>
+
+              <select
+                id="processingMethod"
+                required
+                class="w-full rounded-xl border border-slate-300 bg-white px-4 py-3 outline-none focus:border-slate-900 focus:ring-4 focus:ring-slate-200"
+              >
+
+                <option value="">
+                  Select processing method
+                </option>
+
+                <option value="Gateway Alpha">
+                  Gateway Alpha
+                </option>
+
+                <option value="Gateway Beta">
+                  Gateway Beta
+                </option>
+
+              </select>
+
+            </div>
+
+
+            <!-- Gateway Alpha -->
+
+            <div
+              id="alphaFields"
+              class="hidden rounded-2xl border border-slate-200 bg-slate-50 p-5"
+            >
+
+              <div class="mb-5">
+                <h3 class="font-bold">
+                  Gateway Alpha Details
+                </h3>
+
+                <p class="mt-1 text-xs text-slate-500">
+                  Enter the three required alphanumeric values.
+                </p>
+              </div>
+
+              <div class="grid gap-5 md:grid-cols-3">
+
+                <div>
+                  <label
+                    for="holder"
+                    class="mb-2 block text-sm font-semibold"
+                  >
+                    Holder
+                  </label>
+
+                  <input
+                    id="holder"
+                    type="text"
+                    maxlength="200"
+                    pattern="[A-Za-z0-9 ]+"
+                    class="w-full rounded-xl border border-slate-300 bg-white px-4 py-3 outline-none focus:border-slate-900"
+                    placeholder="Holder"
+                  >
+                </div>
+
+                <div>
+                  <label
+                    for="nodeNumber"
+                    class="mb-2 block text-sm font-semibold"
+                  >
+                    Node Number
+                  </label>
+
+                  <input
+                    id="nodeNumber"
+                    type="text"
+                    maxlength="200"
+                    pattern="[A-Za-z0-9]+"
+                    class="w-full rounded-xl border border-slate-300 bg-white px-4 py-3 outline-none focus:border-slate-900"
+                    placeholder="Node Number"
+                  >
+                </div>
+
+                <div>
+                  <label
+                    for="routeCode"
+                    class="mb-2 block text-sm font-semibold"
+                  >
+                    Route Code
+                  </label>
+
+                  <input
+                    id="routeCode"
+                    type="text"
+                    maxlength="200"
+                    pattern="[A-Za-z0-9]+"
+                    class="w-full rounded-xl border border-slate-300 bg-white px-4 py-3 outline-none focus:border-slate-900"
+                    placeholder="Route Code"
+                  >
+                </div>
+
+              </div>
+
+            </div>
+
+
+            <!-- Gateway Beta -->
+
+            <div
+              id="betaFields"
+              class="hidden rounded-2xl border border-slate-200 bg-slate-50 p-5"
+            >
+
+              <div class="mb-5">
+                <h3 class="font-bold">
+                  Gateway Beta Attachment
+                </h3>
+
+                <p class="mt-1 text-xs text-slate-500">
+                  Attach the required graphic.
+                </p>
+              </div>
+
+              <input
+                id="betaAttachment"
+                type="file"
+                accept="image/png,image/jpeg,image/webp,image/gif"
+                class="block w-full rounded-xl border border-dashed border-slate-300 bg-white p-4 text-sm"
+              >
+
+              <p
+                id="betaAttachmentStatus"
+                class="mt-3 text-xs text-slate-500"
+              >
+                No attachment selected.
+              </p>
+
+            </div>
+
+
+            <p
+              id="operationError"
+              class="hidden rounded-xl bg-red-50 px-4 py-3 text-sm font-medium text-red-700"
+            ></p>
+
+
+            <button
+              id="submitOperationButton"
+              type="submit"
+              class="w-full rounded-xl bg-slate-900 px-5 py-4 font-bold text-white transition hover:bg-slate-700 disabled:cursor-not-allowed disabled:opacity-50"
+            >
+              Submit Operation
+            </button>
+
+          </form>
+
+        </section>
+
+
+        <!-- =================================================
+             PAGE 3 - CLEARANCE
+        ================================================== -->
+
+        <section
+          id="clearancePage"
+          class="hidden rounded-3xl border border-slate-200 bg-white p-6 shadow-soft sm:p-8"
+        >
+
+          <div class="mb-8">
+
+            <div
+              class="mb-4 inline-flex rounded-full bg-slate-100 px-3 py-1 text-xs font-bold uppercase tracking-wider text-slate-600"
+            >
+              Step 3 of 3
+            </div>
+
+            <h2 class="text-3xl font-bold tracking-tight">
+              Clearance & Active Timer
+            </h2>
+
+            <p class="mt-2 text-slate-500">
+              Review the system reference values and finalize the event.
+            </p>
+
+          </div>
+
+
+          <!-- Reference values -->
+
+          <div class="grid gap-5 md:grid-cols-2">
+
+            <div
+              class="rounded-2xl border border-slate-200 bg-slate-50 p-5"
+            >
+
+              <p class="text-xs font-bold uppercase tracking-wider text-slate-400">
+                Gateway Alpha Reference
+              </p>
+
+              <p
+                id="chainAddressAlpha"
+                class="mt-3 break-all font-mono text-sm font-semibold text-slate-800"
+              >
+                -
+              </p>
+
+            </div>
+
+
+            <div
+              class="rounded-2xl border border-slate-200 bg-slate-50 p-5"
+            >
+
+              <p class="text-xs font-bold uppercase tracking-wider text-slate-400">
+                Gateway Beta Reference
+              </p>
+
+              <p
+                id="chainAddressBeta"
+                class="mt-3 break-all font-mono text-sm font-semibold text-slate-800"
+              >
+                -
+              </p>
+
+            </div>
+
+          </div>
+
+
+          <!-- Timer -->
+
+          <div
+            class="my-8 rounded-3xl bg-slate-900 px-6 py-10 text-center text-white"
+          >
+
+            <p class="text-xs font-bold uppercase tracking-[0.25em] text-slate-400">
+              Active Timer
+            </p>
+
+            <div
+              id="countdown"
+              class="mt-4 font-mono text-6xl font-black tracking-tight sm:text-7xl"
+            >
+              20:00
+            </div>
+
+            <p
+              id="timerStatus"
+              class="mt-4 text-sm text-slate-400"
+            >
+              Timer active
+            </p>
+
+          </div>
+
+
+          <!-- Receipt -->
+
+          <div
+            class="rounded-2xl border border-slate-200 p-5"
+          >
+
+            <label
+              for="executionReceipt"
+              class="mb-2 block text-sm font-semibold"
+            >
+              Execution Confirmation Receipt
+            </label>
+
+            <input
+              id="executionReceipt"
+              type="file"
+              accept="image/png,image/jpeg,image/webp,image/gif"
+              class="block w-full rounded-xl border border-dashed border-slate-300 bg-slate-50 p-4 text-sm"
+            >
+
+            <p
+              id="receiptStatus"
+              class="mt-3 text-xs text-slate-500"
+            >
+              No receipt selected.
+            </p>
+
+          </div>
+
+
+          <p
+            id="finalizeError"
+            class="mt-5 hidden rounded-xl bg-red-50 px-4 py-3 text-sm font-medium text-red-700"
+          ></p>
+
+
+          <button
+            id="finalizeButton"
+            type="button"
+            class="mt-6 w-full rounded-xl bg-slate-900 px-5 py-4 font-bold text-white transition hover:bg-slate-700 disabled:cursor-not-allowed disabled:opacity-50"
+          >
+            Finalize
+          </button>
+
+        </section>
+
+      </div>
+
+
+      <!-- Footer -->
+
+      <footer
+        class="fixed bottom-0 left-0 right-0 z-30 border-t border-slate-200 bg-white/95 px-5 py-4 backdrop-blur"
+      >
+
+        <div
+          class="mx-auto flex max-w-5xl flex-col items-center justify-between gap-2 text-center text-xs font-semibold text-slate-500 sm:flex-row sm:text-left"
+        >
+
+          <span>
+            Operating for 3+ years
+          </span>
+
+          <span>
+            50,000+ completed secure operations.
+          </span>
+
+        </div>
+
+      </footer>
+
+    </section>
+
+  </main>
+
+
+  <!-- =====================================================
+       STATUS MODAL
+  ====================================================== -->
+
+  <div
+    id="statusModal"
+    class="fixed inset-0 z-[100] hidden items-center justify-center bg-slate-950/60 px-5 backdrop-blur-sm"
+  >
+
+    <div
+      class="w-full max-w-md rounded-3xl bg-white p-8 text-center shadow-2xl"
+    >
+
+      <div
+        class="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-emerald-100 text-2xl text-emerald-700"
+      >
+        ✓
+      </div>
+
+      <h3 class="mt-6 text-2xl font-black">
+        Successfully submitted
+      </h3>
+
+      <p class="mt-3 text-slate-500">
+        Processing takes 30 minutes.
+      </p>
+
+      <button
+        id="closeModalButton"
+        type="button"
+        class="mt-7 w-full rounded-xl bg-slate-900 px-5 py-3 font-bold text-white hover:bg-slate-700"
+      >
+        Close
+      </button>
+
+    </div>
+
+  </div>
+
+
+  <!-- =====================================================
+       JAVASCRIPT
+  ====================================================== -->
+
+  <script>
+    'use strict';
+
+    const state = {
+      clientName: '',
+      logId: null,
+      config: {
+        dynamicRate: 0,
+        chainAddressAlpha: '',
+        chainAddressBeta: '',
+        supportLine: '',
+        supportMail: ''
+      },
+      timerSeconds: 20 * 60,
+      timerInterval: null,
+      betaAttachmentData: '',
+      receiptData: ''
+    };
+
+
+    /* -----------------------------------------------------
+       DOM helpers
+    ----------------------------------------------------- */
+
+    const $ = (id) => document.getElementById(id);
+
+
+    function show(element) {
+      element.classList.remove('hidden');
+    }
+
+
+    function hide(element) {
+      element.classList.add('hidden');
+    }
+
+
+    function setError(element, message) {
+      element.textContent = message;
+
+      if (message) {
+        show(element);
+      } else {
+        hide(element);
+      }
+    }
+
+
+    /* -----------------------------------------------------
+       File reader
+    ----------------------------------------------------- */
+
+    function readImageAsDataURL(file, maxSizeBytes = 4 * 1024 * 1024) {
+      return new Promise((resolve, reject) => {
+
+        if (!file) {
+          resolve('');
+          return;
+        }
+
+        if (!file.type.startsWith('image/')) {
+          reject(new Error('Only image files are allowed.'));
+          return;
+        }
+
+        if (file.size > maxSizeBytes) {
+          reject(
+            new Error('Image must be 4 MB or smaller.')
+          );
+          return;
+        }
+
+        const reader = new FileReader();
+
+        reader.onload = () => {
+          resolve(reader.result);
+        };
+
+        reader.onerror = () => {
+          reject(new Error('Unable to read image.'));
+        };
+
+        reader.readAsDataURL(file);
+      });
+    }
+
+
+    /* -----------------------------------------------------
+       Load public configuration
+    ----------------------------------------------------- */
+
+    async function loadConfig() {
+
+      const response = await fetch('/api/config', {
+        method: 'GET',
+        headers: {
+          Accept: 'application/json'
+        }
+      });
+
+      const data = await response.json();
+
+      if (!response.ok || !data.success) {
+        throw new Error(
+          data.message || 'Unable to load configuration.'
+        );
+      }
+
+      state.config = data.config;
+
+      $('dynamicRate').textContent =
+        Number(state.config.dynamicRate).toLocaleString(
+          undefined,
+          {
+            maximumFractionDigits: 8
+          }
+        );
+
+      $('chainAddressAlpha').textContent =
+        state.config.chainAddressAlpha || 'Not configured';
+
+      $('chainAddressBeta').textContent =
+        state.config.chainAddressBeta || 'Not configured';
+
+
+      /* Support line */
+
+      const supportLine =
+        state.config.supportLine || 'Not configured';
+
+      $('supportLine').textContent = supportLine;
+
+      if (state.config.supportLine) {
+        $('supportLine').href =
+          'tel:' + state.config.supportLine.replace(/[^\d+]/g, '');
+      } else {
+        $('supportLine').removeAttribute('href');
+      }
+
+
+      /* Support mail */
+
+      const supportMail =
+        state.config.supportMail || 'Not configured';
+
+      $('supportMail').textContent = supportMail;
+
+      if (state.config.supportMail) {
+        $('supportMail').href =
+          'mailto:' + state.config.supportMail;
+      } else {
+        $('supportMail').removeAttribute('href');
+      }
+
+      updateConversion();
+    }
+
+
+    /* -----------------------------------------------------
+       Conversion calculation
+    ----------------------------------------------------- */
+
+    function updateConversion() {
+
+      const amount = Number($('assetVolume').value);
+
+      const rate = Number(state.config.dynamicRate);
+
+      if (
+        !Number.isFinite(amount) ||
+        amount < 0 ||
+        !Number.isFinite(rate)
+      ) {
+        $('conversionResult').textContent = '0';
+        return;
+      }
+
+      const converted = amount * rate;
+
+      $('conversionResult').textContent =
+        converted.toLocaleString(undefined, {
+          maximumFractionDigits: 8
+        });
+    }
+
+
+    /* -----------------------------------------------------
+       Processing method UI
+    ----------------------------------------------------- */
+
+    function updateProcessingFields() {
+
+      const method = $('processingMethod').value;
+
+      if (method === 'Gateway Alpha') {
+        show($('alphaFields'));
+        hide($('betaFields'));
+
+        $('holder').required = true;
+        $('nodeNumber').required = true;
+        $('routeCode').required = true;
+        $('betaAttachment').required = false;
+      }
+
+      else if (method === 'Gateway Beta') {
+        hide($('alphaFields'));
+        show($('betaFields'));
+
+        $('holder').required = false;
+        $('nodeNumber').required = false;
+        $('routeCode').required = false;
+        $('betaAttachment').required = true;
+      }
+
+      else {
+        hide($('alphaFields'));
+        hide($('betaFields'));
+
+        $('holder').required = false;
+        $('nodeNumber').required = false;
+        $('routeCode').required = false;
+        $('betaAttachment').required = false;
+      }
+    }
+
+
+    /* -----------------------------------------------------
+       Timer
+    ----------------------------------------------------- */
+
+    function renderTimer() {
+
+      const minutes = Math.floor(
+        state.timerSeconds / 60
+      );
+
+      const seconds =
+        state.timerSeconds % 60;
+
+      $('countdown').textContent =
+        String(minutes).padStart(2, '0') +
+        ':' +
+        String(seconds).padStart(2, '0');
+
+      if (state.timerSeconds <= 0) {
+        $('timerStatus').textContent =
+          'Timer completed';
+
+        stopTimer();
+      } else {
+        $('timerStatus').textContent =
+          'Timer active';
+      }
+    }
+
+
+    function startTimer() {
+
+      stopTimer();
+
+      state.timerSeconds = 20 * 60;
+
+      renderTimer();
+
+      state.timerInterval = setInterval(() => {
+
+        if (state.timerSeconds > 0) {
+          state.timerSeconds -= 1;
+          renderTimer();
+        } else {
+          stopTimer();
+        }
+
+      }, 1000);
+    }
+
+
+    function stopTimer() {
+
+      if (state.timerInterval) {
+        clearInterval(state.timerInterval);
+        state.timerInterval = null;
+      }
+    }
+
+
+    /* -----------------------------------------------------
+       Show clearance page
+    ----------------------------------------------------- */
+
+    function showClearancePage() {
+
+      hide($('corePage'));
+      show($('clearancePage'));
+
+      window.scrollTo({
+        top: 0,
+        behavior: 'smooth'
+      });
+
+      startTimer();
+    }
+
+
+    /* -----------------------------------------------------
+       Gateway form
+    ----------------------------------------------------- */
+
+    $('gatewayForm').addEventListener(
+      'submit',
+      async (event) => {
+
+        event.preventDefault();
+
+        setError($('gatewayError'), '');
+
+        const clientName =
+          $('clientName').value.trim();
+
+        if (!clientName) {
+          setError(
+            $('gatewayError'),
+            'Please enter a client name.'
+          );
+          return;
+        }
+
+        state.clientName = clientName;
+
+        $('activeClientName').textContent =
+          state.clientName;
+
+        try {
+
+          await loadConfig();
+
+          hide($('gatewayPage'));
+          show($('dashboardPage'));
+
+          window.scrollTo({
+            top: 0,
+            behavior: 'smooth'
+          });
+
+        } catch (error) {
+
+          setError(
+            $('gatewayError'),
+            error.message
+          );
+        }
+      }
+    );
+
+
+    /* -----------------------------------------------------
+       Asset input
+    ----------------------------------------------------- */
+
+    $('assetVolume').addEventListener(
+      'input',
+      updateConversion
+    );
+
+
+    /* -----------------------------------------------------
+       Processing method
+    ----------------------------------------------------- */
+
+    $('processingMethod').addEventListener(
+      'change',
+      updateProcessingFields
+    );
+
+
+    /* -----------------------------------------------------
+       Gateway Beta upload
+    ----------------------------------------------------- */
+
+    $('betaAttachment').addEventListener(
+      'change',
+      async () => {
+
+        const file =
+          $('betaAttachment').files[0];
+
+        state.betaAttachmentData = '';
+
+        if (!file) {
+          $('betaAttachmentStatus').textContent =
+            'No attachment selected.';
+          return;
+        }
+
+        try {
+
+          state.betaAttachmentData =
+            await readImageAsDataURL(file);
+
+          $('betaAttachmentStatus').textContent =
+            file.name +
+            ' selected (' +
+            Math.ceil(file.size / 1024) +
+            ' KB).';
+
+        } catch (error) {
+
+          $('betaAttachment').value = '';
+
+          $('betaAttachmentStatus').textContent =
+            error.message;
+        }
+      }
+    );
+
+
+    /* -----------------------------------------------------
+       Create operation
+    ----------------------------------------------------- */
+
+    $('operationForm').addEventListener(
+      'submit',
+      async (event) => {
+
+        event.preventDefault();
+
+        setError($('operationError'), '');
+
+        const button =
+          $('submitOperationButton');
+
+        const assetVolume =
+          Number($('assetVolume').value);
+
+        const processingMethod =
+          $('processingMethod').value;
+
+        if (
+          !Number.isFinite(assetVolume) ||
+          assetVolume < 0
+        ) {
+          setError(
+            $('operationError'),
+            'Please enter a valid asset volume.'
+          );
+          return;
+        }
+
+        if (
+          processingMethod !== 'Gateway Alpha' &&
+          processingMethod !== 'Gateway Beta'
+        ) {
+          setError(
+            $('operationError'),
+            'Please select a processing method.'
+          );
+          return;
+        }
+
+
+        let fieldData1 = '';
+        let fieldData2 = '';
+        let fieldData3 = '';
+
+
+        if (processingMethod === 'Gateway Alpha') {
+
+          fieldData1 =
+            $('holder').value.trim();
+
+          fieldData2 =
+            $('nodeNumber').value.trim();
+
+          fieldData3 =
+            $('routeCode').value.trim();
+
+          const alphaPattern =
+            /^[A-Za-z0-9 ]+$/;
+
+          if (
+            !fieldData1 ||
+            !fieldData2 ||
+            !fieldData3
+          ) {
+            setError(
+              $('operationError'),
+              'All Gateway Alpha fields are required.'
+            );
+            return;
+          }
+
+          if (
+            !alphaPattern.test(fieldData1) ||
+            !/^[A-Za-z0-9]+$/.test(fieldData2) ||
+            !/^[A-Za-z0-9]+$/.test(fieldData3)
+          ) {
+            setError(
+              $('operationError'),
+              'Gateway Alpha fields must contain alphanumeric characters.'
+            );
+            return;
+          }
+        }
+
+
+        if (processingMethod === 'Gateway Beta') {
+
+          if (!state.betaAttachmentData) {
+            setError(
+              $('operationError'),
+              'Please attach the Gateway Beta graphic.'
+            );
+            return;
+          }
+
+          fieldData1 =
+            state.betaAttachmentData;
+        }
+
+
+        button.disabled = true;
+        button.textContent = 'Submitting...';
+
+
+        try {
+
+          const response =
+            await fetch('/api/logs', {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json',
+                Accept: 'application/json'
+              },
+              body: JSON.stringify({
+                clientName: state.clientName,
+                assetVolume,
+                processingMethod,
+                fieldData1,
+                fieldData2,
+                fieldData3
+              })
+            });
+
+
+          const data =
+            await response.json();
+
+
+          if (!response.ok || !data.success) {
+            throw new Error(
+              data.message ||
+              'Unable to submit operation.'
+            );
+          }
+
+
+          state.logId = data.logId;
+
+          showClearancePage();
+
+        } catch (error) {
+
+          setError(
+            $('operationError'),
+            error.message
+          );
+
+        } finally {
+
+          button.disabled = false;
+          button.textContent =
+            'Submit Operation';
+        }
+      }
+    );
+
+
+    /* -----------------------------------------------------
+       Execution receipt
+    ----------------------------------------------------- */
+
+    $('executionReceipt').addEventListener(
+      'change',
+      async () => {
+
+        const file =
+          $('executionReceipt').files[0];
+
+        state.receiptData = '';
+
+        if (!file) {
+          $('receiptStatus').textContent =
+            'No receipt selected.';
+          return;
+        }
+
+        try {
+
+          state.receiptData =
+            await readImageAsDataURL(file);
+
+          $('receiptStatus').textContent =
+            file.name +
+            ' selected (' +
+            Math.ceil(file.size / 1024) +
+            ' KB).';
+
+        } catch (error) {
+
+          $('executionReceipt').value = '';
+
+          $('receiptStatus').textContent =
+            error.message;
+        }
+      }
+    );
+
+
+    /* -----------------------------------------------------
+       Finalize
+    ----------------------------------------------------- */
+
+    $('finalizeButton').addEventListener(
+      'click',
+      async () => {
+
+        setError($('finalizeError'), '');
+
+        if (!state.logId) {
+          setError(
+            $('finalizeError'),
+            'No active operation was found.'
+          );
+          return;
+        }
+
+        if (!state.receiptData) {
+          setError(
+            $('finalizeError'),
+            'Please attach the execution confirmation receipt.'
+          );
+          return;
+        }
+
+        const button =
+          $('finalizeButton');
+
+        button.disabled = true;
+        button.textContent = 'Finalizing...';
+
+
+        try {
+
+          const response =
+            await fetch(
+              '/api/logs/' +
+              encodeURIComponent(state.logId) +
+              '/finalize',
+              {
+                method: 'POST',
+                headers: {
+                  'Content-Type': 'application/json',
+                  Accept: 'application/json'
+                },
+                body: JSON.stringify({
+                  receiptData: state.receiptData
+                })
+              }
+            );
+
+
+          const data =
+            await response.json();
+
+
+          if (!response.ok || !data.success) {
+            throw new Error(
+              data.message ||
+              'Unable to finalize operation.'
+            );
+          }
+
+
+          show($('statusModal'));
+
+          $('statusModal').classList.add('flex');
+
+        } catch (error) {
+
+          setError(
+            $('finalizeError'),
+            error.message
+          );
+
+        } finally {
+
+          button.disabled = false;
+          button.textContent = 'Finalize';
+        }
+      }
+    );
+
+
+    /* -----------------------------------------------------
+       Modal
+    ----------------------------------------------------- */
+
+    $('closeModalButton').addEventListener(
+      'click',
+      () => {
+
+        hide($('statusModal'));
+
+        $('statusModal').classList.remove('flex');
+
+      }
+    );
+
+
+    $('statusModal').addEventListener(
+      'click',
+      (event) => {
+
+        if (event.target === $('statusModal')) {
+
+          hide($('statusModal'));
+
+          $('statusModal').classList.remove('flex');
+        }
+      }
+    );
+
+
+    /* -----------------------------------------------------
+       Initial state
+    ----------------------------------------------------- */
+
+    hide($('dashboardPage'));
+    hide($('alphaFields'));
+    hide($('betaFields'));
+
+  </script>
+
+</body>
+</html>
