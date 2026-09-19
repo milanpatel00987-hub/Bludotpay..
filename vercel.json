@@ -13,11 +13,11 @@
     },
     {
       "src": "/admin",
-      "dest": "Admin.html"
+      "dest": "server.js"
     },
     {
       "src": "/(.*)",
-      "dest": "Index.html"
+      "dest": "server.js"
     }
   ]
 }
