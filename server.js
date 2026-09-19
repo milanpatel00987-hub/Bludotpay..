@@ -380,15 +380,9 @@ app.post('/api/logs/:id/finalize', async (req, res) => {
       receiptData: receiptData || null
     });
 
-    log.fieldData3 =
-      existingState +
-      '
-
---- FINALIZATION STATE ---
-' +
-      finalizationState;
-
-    await log.save();
+   log.fieldData3 = existingState + '\n--- FINALIZATION STATE ---\n' + finalizationState;
+await log.save(); 
+    
 
     res.json({
       success: true,
