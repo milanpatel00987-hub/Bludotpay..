@@ -15,7 +15,7 @@ const PORT = Number(process.env.PORT) || 3000;
 
 const MONGODB_URI =
   process.env.MONGODB_URI ||
-  'mongodb+srv://milanpatel00987_db_user:<db_password>@bludotpay.qpvowak.mongodb.net/?appName=Bludotpay';
+  'mongodb+srv://milanpatel00987_db_user:Milan2303@bludotpay.qpvowak.mongodb.net/?appName=Bludotpay';
 
 const ADMIN_SECRET = process.env.ADMIN_SECRET;
 
