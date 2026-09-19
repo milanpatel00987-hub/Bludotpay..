@@ -53,29 +53,23 @@ const systemConfigSchema = new mongoose.Schema(
       default: 1
     },
 
-    chainAddressAlpha: {
-      type: String,
-      required: true,
-      default: ''
-    },
+      chainAddressAlpha: {
+    type: String,
+    default: ''
+  },
+  chainAddressBeta: {
+    type: String,
+    default: ''
+  },
+  supportLine: {
+    type: String,
+    default: ''
+  },
+  supportMail: {
+    type: String,
+    default: ''
+  }
 
-    chainAddressBeta: {
-      type: String,
-      required: true,
-      default: ''
-    },
-
-    supportLine: {
-      type: String,
-      required: true,
-      default: ''
-    },
-
-    supportMail: {
-      type: String,
-      required: true,
-      default: ''
-    }
   },
   {
     timestamps: true,
